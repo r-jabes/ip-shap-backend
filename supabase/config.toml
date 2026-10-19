@@ -1,0 +1,16 @@
+# Minimal Supabase CLI project config for THE IP SHAP BUSINESS LTD backend.
+# Full local stack setup is documented in documentation/README.md.
+
+project_id = "ip-shap-backend"
+
+[api]
+enabled = true
+port = 54321
+
+[db]
+port = 54322
+major_version = 15
+
+[studio]
+enabled = true
+port = 54323
