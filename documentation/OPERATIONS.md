@@ -40,3 +40,7 @@ values ('<auth-user-uuid>', 'owner', 'Primary owner', true);
 ## Bulk import CSV
 
 Template headers are defined in `contracts/bulk-import.ts` (`BULK_IMPORT_HEADERS`). Always dry-run validate; never silently skip invalid rows.
+
+## Release
+
+Follow `RELEASE_CHECKLIST.md`. Confirm `RWANDA_LAUNCH_CHECKLIST.md` items with the business before marketing launch.

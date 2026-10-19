@@ -48,3 +48,10 @@ This project does **not** claim compliance. Before launch, obtain qualified loca
 - Public bucket exposure of originals → prefer private originals + public derivatives
 - Hidden admin UI is not authorisation — every mutation checks role server-side / RLS
 - Login responses must not disclose whether an email exists
+- Payment callbacks → signature verification + idempotent event store (never trust redirects)
+- Order PII → no anon SELECT on orders/items (see `RLS_INVENTORY.md`)
+- Audit logs → no passwords, cards, or webhook secrets
+
+## Privacy
+
+See `PRIVACY_AND_RETENTION.md`. Launch confirmation items: `RWANDA_LAUNCH_CHECKLIST.md`.

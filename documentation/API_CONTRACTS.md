@@ -1,6 +1,6 @@
 # API contracts
 
-Canonical schemas live in `contracts/` and are versioned via `CONTRACT_VERSION` in `contracts/money.ts` (currently `0.6.0`).
+Canonical schemas live in `contracts/` and are versioned via `CONTRACT_VERSION` in `contracts/money.ts` (currently `0.7.0`).
 
 ## Modules
 

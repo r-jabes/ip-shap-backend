@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.0 — Phase 08 hardening (2026-10-19)
+
+- Money multiply overflow helpers + invariant tests
+- RLS inventory, privacy/retention, Rwanda launch + release checklists
+- Document residual security risks honestly; bump `CONTRACT_VERSION` to `0.7.0`
+
 ## 0.6.0 — Phase 07 payments and notifications (2026-10-19)
 
 - Document Rwanda provider decision gate; live provider remains unselected

@@ -38,6 +38,9 @@ backend/
 | Schema, RLS, storage policies              | backend                                       |
 | Order creation integrity, payment webhooks | backend (+ frontend BFF only when documented) |
 | Demo fixtures                              | frontend (gated); never auto-seed production  |
+| RLS inventory / privacy retention notes    | backend documentation                         |
+
+Phase 08 hardening docs: `RLS_INVENTORY.md`, `PRIVACY_AND_RETENTION.md`, `RELEASE_CHECKLIST.md`, `RWANDA_LAUNCH_CHECKLIST.md`.
 
 ## Product imagery (Phase 02)
 
