@@ -9,8 +9,8 @@ Names and purposes only — never commit secrets.
 | `SUPABASE_SERVICE_ROLE_KEY` | Service role — server/Edge only              |
 | `SUPABASE_DB_URL`           | Direct DB URL for migrations/admin           |
 | `SUPABASE_JWT_SECRET`       | JWT secret for local/advanced auth scenarios |
-| `PAYMENT_PROVIDER`          | Reserved; unset until provider verified      |
-| `PAYMENT_WEBHOOK_SECRET`    | Reserved webhook verification secret         |
+| `PAYMENT_PROVIDER`          | `unselected` (default) or `sandbox` (tests)  |
+| `PAYMENT_WEBHOOK_SECRET`    | HMAC secret for sandbox/live webhooks        |
 
 Admin Auth users are created in the Supabase dashboard; privilege is granted via `admin_profiles` rows (see `SECURITY.md`). Do not add public admin registration env flags.
 

@@ -52,9 +52,20 @@ Unreviewed / rejected images must not auto-publish to production catalogue reads
 
 Negative stock is rejected. `unknown` availability must not be treated as in stock.
 
+## Orders and delivery (Phase 06)
+
+| Table                  | Purpose                                             |
+| ---------------------- | --------------------------------------------------- |
+| `delivery_zones`       | Configurable coverage + optional integer RWF fee    |
+| `orders`               | Reference, lookup token, money totals, customer PII |
+| `order_items`          | Immutable name/price/qty snapshots                  |
+| `order_status_history` | Fulfilment/payment transitions with actor + reason  |
+
+Public cannot list orders. Lookup is reference + token (app layer). Admins read via RLS.
+
 ## Schema status
 
-Extensions + catalogue + admin/inventory migrations are in `supabase/migrations/`. No catalogue seed data.
+Extensions + catalogue + admin/inventory + orders migrations are in `supabase/migrations/`. No catalogue/order seed data.
 
 ## Demo vs production
 

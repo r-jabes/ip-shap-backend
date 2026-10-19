@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.6.0 — Phase 07 payments and notifications (2026-10-19)
+
+- Document Rwanda provider decision gate; live provider remains unselected
+- Add payment contracts, sandbox adapter + signed webhook helpers, payment migrations
+- Add log-only notification adapter and template ids
+- Extend payment status with `cancelled`; bump `CONTRACT_VERSION` to `0.6.0`
+
+## 0.5.0 — Phase 06 orders and delivery (2026-10-19)
+
+- Add delivery zones, orders, order_items, status history migration + RLS
+- Expand order contracts (fulfilment/payment split, idempotency, snapshots)
+- Add legal state-transition helpers; document reservation and WhatsApp-first flow
+- Bump `CONTRACT_VERSION` to `0.5.0`
+
 ## 0.4.0 — Phase 05 admin and inventory (2026-10-19)
 
 - Add `admin_profiles`, `inventory_levels`, `stock_adjustments`, `audit_events` migration + RLS
