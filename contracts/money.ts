@@ -8,4 +8,4 @@ export const moneyRwfSchema = z.object({
 
 export type MoneyRwf = z.infer<typeof moneyRwfSchema>;
 
-export const CONTRACT_VERSION = "0.2.0" as const;
+export const CONTRACT_VERSION = "0.4.0" as const;

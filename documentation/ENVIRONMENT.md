@@ -12,4 +12,6 @@ Names and purposes only — never commit secrets.
 | `PAYMENT_PROVIDER`          | Reserved; unset until provider verified      |
 | `PAYMENT_WEBHOOK_SECRET`    | Reserved webhook verification secret         |
 
+Admin Auth users are created in the Supabase dashboard; privilege is granted via `admin_profiles` rows (see `SECURITY.md`). Do not add public admin registration env flags.
+
 Validation helper: `src/validation/env.ts`.

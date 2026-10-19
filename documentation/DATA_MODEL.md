@@ -41,9 +41,20 @@ Planned `product_images` columns (not migrated yet):
 
 Unreviewed / rejected images must not auto-publish to production catalogue reads.
 
-## Phase 00 schema
+## Admin and inventory (Phase 05)
 
-Only `pgcrypto` is enabled. Catalogue and order tables arrive in later phases.
+| Table               | Purpose                                                     |
+| ------------------- | ----------------------------------------------------------- |
+| `admin_profiles`    | `owner` / `staff` linked to `auth.users` — no public signup |
+| `inventory_levels`  | Per-product quantity (nullable when unknown) + availability |
+| `stock_adjustments` | Immutable audit of quantity/availability changes            |
+| `audit_events`      | Sensitive action log (no secrets/passwords)                 |
+
+Negative stock is rejected. `unknown` availability must not be treated as in stock.
+
+## Schema status
+
+Extensions + catalogue + admin/inventory migrations are in `supabase/migrations/`. No catalogue seed data.
 
 ## Demo vs production
 

@@ -8,6 +8,13 @@ export const productStatusSchema = z.enum([
   "archived",
 ]);
 
+export const productAvailabilitySchema = z.enum([
+  "in_stock",
+  "low_stock",
+  "out_of_stock",
+  "unknown",
+]);
+
 export const productImageRoleSchema = z.enum([
   "catalogue_primary",
   "catalogue_secondary",
@@ -53,20 +60,35 @@ export const productSchema = z.object({
   description: z.string(),
   price: moneyRwfSchema,
   categorySlug: z.string().optional(),
+  brandSlug: z.string().optional(),
+  brandName: z.string().optional(),
   status: productStatusSchema,
+  availability: productAvailabilitySchema.default("unknown"),
   images: z.array(productImageSchema),
   isProvisional: z.boolean(),
   internalNotes: z.array(z.string()).optional(),
 });
 
 export const catalogueListQuerySchema = z.object({
-  categorySlug: z.string().optional(),
-  q: z.string().optional(),
+  categorySlug: z.string().max(120).optional(),
+  brandSlug: z.string().max(120).optional(),
+  availability: z.enum(["all", "in_stock", "unknown"]).optional(),
+  q: z.string().max(120).optional(),
   sort: z.enum(["price_asc", "price_desc", "name_asc"]).optional(),
-  cursor: z.string().optional(),
-  limit: z.number().int().min(1).max(100).default(24),
+  page: z.number().int().min(1).max(10_000).default(1),
+  pageSize: z.number().int().min(1).max(48).default(24),
+  cursor: z.string().max(200).optional(),
+});
+
+export const catalogueListResultSchema = z.object({
+  items: z.array(productSchema),
+  page: z.number().int().min(1),
+  pageSize: z.number().int().min(1).max(48),
+  total: z.number().int().nonnegative(),
+  totalPages: z.number().int().nonnegative(),
 });
 
 export type Product = z.infer<typeof productSchema>;
 export type ProductImage = z.infer<typeof productImageSchema>;
 export type CatalogueListQuery = z.infer<typeof catalogueListQuerySchema>;
+export type CatalogueListResult = z.infer<typeof catalogueListResultSchema>;

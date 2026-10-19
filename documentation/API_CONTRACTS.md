@@ -1,6 +1,6 @@
 # API contracts
 
-Canonical schemas live in `contracts/` and are versioned via `CONTRACT_VERSION` in `contracts/money.ts` (currently `0.2.0`).
+Canonical schemas live in `contracts/` and are versioned via `CONTRACT_VERSION` in `contracts/money.ts` (currently `0.4.0`).
 
 ## Modules
 
@@ -8,6 +8,8 @@ Canonical schemas live in `contracts/` and are versioned via `CONTRACT_VERSION` 
 | ------------ | ----------------------------------- | ----------------------------------------------- |
 | Money        | `contracts/money.ts`                | Integer RWF                                     |
 | Catalogue    | `contracts/catalogue.ts`            | Product + image metadata + list query           |
+| Admin        | `contracts/admin.ts`                | Roles, product write, stock adjustment          |
+| Bulk import  | `contracts/bulk-import.ts`          | CSV template + dry-run validation report        |
 | Image upload | `contracts/product-image-upload.ts` | Upload meta + MIME/signature gate (no HTTP yet) |
 | Orders       | `contracts/orders.ts`               | Create order request/summary                    |
 
