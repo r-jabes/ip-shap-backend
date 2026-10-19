@@ -6,7 +6,7 @@
 2. Service role key only in trusted server/Edge contexts
 3. Webhook handlers must verify signatures and be idempotent
 4. No secrets in migrations or Git
-5. Image uploads (later): validate MIME/signature, size, dimensions; re-encode before public serve
+5. Image uploads (planned endpoint): validate declared MIME against magic bytes, enforce size/dimension ceilings (`contracts/product-image-upload.ts`), re-encode before public serve; keep originals in a private bucket and expose derivatives only. Never auto-publish `needs_review` / AI-edited assets.
 
 ## Alcohol / regulated goods checklist (for qualified local review)
 

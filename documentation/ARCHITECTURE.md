@@ -39,6 +39,12 @@ backend/
 | Order creation integrity, payment webhooks | backend (+ frontend BFF only when documented) |
 | Demo fixtures                              | frontend (gated); never auto-seed production  |
 
+## Product imagery (Phase 02)
+
+- Private originals vs public derivatives (see `DATA_MODEL.md` / `SECURITY.md`)
+- Upload boundary validation in `contracts/product-image-upload.ts` (no live endpoint yet)
+- Catalogue image metadata includes roles and `processing_status`; unreviewed assets must not auto-publish
+
 ## Money
 
 All monetary columns and contract fields use integer RWF. No floating-point money.

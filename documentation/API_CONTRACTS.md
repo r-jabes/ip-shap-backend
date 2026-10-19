@@ -1,14 +1,15 @@
 # API contracts
 
-Canonical schemas live in `contracts/` and are versioned via `CONTRACT_VERSION` in `contracts/money.ts` (currently `0.1.0`).
+Canonical schemas live in `contracts/` and are versioned via `CONTRACT_VERSION` in `contracts/money.ts` (currently `0.2.0`).
 
 ## Modules
 
-| Module    | File                     | Purpose                      |
-| --------- | ------------------------ | ---------------------------- |
-| Money     | `contracts/money.ts`     | Integer RWF                  |
-| Catalogue | `contracts/catalogue.ts` | Product + list query         |
-| Orders    | `contracts/orders.ts`    | Create order request/summary |
+| Module       | File                                | Purpose                                         |
+| ------------ | ----------------------------------- | ----------------------------------------------- |
+| Money        | `contracts/money.ts`                | Integer RWF                                     |
+| Catalogue    | `contracts/catalogue.ts`            | Product + image metadata + list query           |
+| Image upload | `contracts/product-image-upload.ts` | Upload meta + MIME/signature gate (no HTTP yet) |
+| Orders       | `contracts/orders.ts`               | Create order request/summary                    |
 
 ## Sync process with frontend
 

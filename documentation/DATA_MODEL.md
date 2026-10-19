@@ -12,7 +12,7 @@
 | Entity             | Purpose                                    |
 | ------------------ | ------------------------------------------ |
 | `products`         | Sellable SKUs                              |
-| `product_images`   | Image metadata + roles                     |
+| `product_images`   | Image metadata + roles + processing status |
 | `categories`       | Browse taxonomy                            |
 | `inventory_levels` | Stock counts / availability                |
 | `delivery_zones`   | Rwanda coverage + fees (configurable)      |
@@ -20,6 +20,26 @@
 | `order_items`      | Line items with unit price snapshots       |
 | `payments`         | Provider attempts / reconciliation (later) |
 | `admin_profiles`   | Operator authorization                     |
+
+## Product image fields (contract-aligned)
+
+Planned `product_images` columns (not migrated yet):
+
+| Field               | Notes                                                                                   |
+| ------------------- | --------------------------------------------------------------------------------------- |
+| `product_id`        | FK — stable identity; never derive from filenames                                       |
+| `role`              | `catalogue_primary` \| `catalogue_secondary` \| `editorial` \| `thumbnail` \| `zoom`    |
+| `sort_order`        | Non-negative integer                                                                    |
+| `alt`               | Required accessible description                                                         |
+| `src` / `zoom_src`  | Public derivative URLs/paths                                                            |
+| `original_ref`      | Private original key; not public by default                                             |
+| `width` / `height`  | Intrinsic pixels of the served derivative                                               |
+| `processing_status` | `source_received` → `needs_review` → `approved_for_catalogue` / `rejected` / `archived` |
+| `crop_instructions` | Operator guidance                                                                       |
+| `rights_note`       | Source / rights                                                                         |
+| flags               | e.g. shared multi-product photo, needs client confirmation                              |
+
+Unreviewed / rejected images must not auto-publish to production catalogue reads.
 
 ## Phase 00 schema
 

@@ -16,16 +16,33 @@ export const productImageRoleSchema = z.enum([
   "zoom",
 ]);
 
+export const imageProcessingStatusSchema = z.enum([
+  "source_received",
+  "needs_review",
+  "approved_for_catalogue",
+  "rejected",
+  "archived",
+]);
+
 export const productImageSchema = z.object({
   id: z.string().min(1),
   role: productImageRoleSchema,
+  /** Public derivative path/URL. */
   src: z.string().min(1),
+  /** Higher-res derivative loaded only for zoom/lightbox. */
+  zoomSrc: z.string().min(1).optional(),
   alt: z.string().min(1),
   width: z.number().int().positive(),
   height: z.number().int().positive(),
   sortOrder: z.number().int().nonnegative(),
+  processingStatus: imageProcessingStatusSchema,
   isSharedMultiProductPhoto: z.boolean().optional(),
+  /** Operator reference only — never product identity. */
   sourceFilename: z.string().optional(),
+  /** Private/original storage key; not public by default. */
+  originalRef: z.string().optional(),
+  cropInstructions: z.string().optional(),
+  rightsNote: z.string().optional(),
   needsClientConfirmation: z.boolean().optional(),
 });
 
@@ -51,4 +68,5 @@ export const catalogueListQuerySchema = z.object({
 });
 
 export type Product = z.infer<typeof productSchema>;
+export type ProductImage = z.infer<typeof productImageSchema>;
 export type CatalogueListQuery = z.infer<typeof catalogueListQuerySchema>;
