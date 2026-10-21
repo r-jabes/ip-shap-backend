@@ -25,6 +25,10 @@
 - Query params are bounded (`q` ≤ 120 chars, `pageSize` ≤ 48) to protect the API.
 - Demo-mode frontend uses the same normalization helper in TypeScript against fixtures; production uses SQL.
 
+## Suggest RPC (P7)
+
+`suggest_catalogue(p_query text, p_limit int)` — security definer, granted to `anon` / `authenticated` / `service_role`. Returns published products only as JSON. Frontend: `GET /api/search/suggest?q=` (rate limited, CDN cache headers).
+
 ## Example public list SQL (reference)
 
 ```sql
