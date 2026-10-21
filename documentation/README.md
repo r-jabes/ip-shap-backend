@@ -1,70 +1,40 @@
-# THE IP SHAP BUSINESS LTD — Backend
+# Backend documentation
 
-This repository owns the **data plane** for the IP SHAP drinks storefront:
+How the IP SHAP data plane (Supabase + contracts) is structured and operated.
 
-- Postgres migrations and RLS policies (Supabase)
-- Storage policies for product imagery (later)
-- Edge Functions and payment/webhook handlers (later)
-- Versioned API contracts (`contracts/`)
-- Backend documentation and CI
+## Start here
 
-It is **not** a custom always-on Node HTTP server. The companion UI lives in `../frontend/`.
+| Doc | Contents |
+| --- | -------- |
+| [../README.md](../README.md) | Stack, migrate/seed, scripts |
+| [ENVIRONMENT.md](./ENVIRONMENT.md) | Backend env and CLI notes |
+| [ARCHITECTURE.md](./ARCHITECTURE.md) | Repo layout and responsibility split |
+| [OPERATIONS.md](./OPERATIONS.md) | Migrations, stock, admin seed, backups |
 
-## Architecture choice
+## Data & contracts
 
-**Next.js + managed Supabase** was selected over a custom API + Postgres stack. See [DECISIONS.md](./DECISIONS.md).
+| Doc | Contents |
+| --- | -------- |
+| [DATA_MODEL.md](./DATA_MODEL.md) | Tables and relationships |
+| [API_CONTRACTS.md](./API_CONTRACTS.md) | Zod contracts and versioning |
+| [ORDER_AND_PAYMENT_LIFECYCLE.md](./ORDER_AND_PAYMENT_LIFECYCLE.md) | Order states and stock timing |
+| [SEARCH.md](./SEARCH.md) | Catalogue suggest / `pg_trgm` |
+| [NOTIFICATIONS.md](./NOTIFICATIONS.md) | Staff notify expectations |
+| [PAYMENTS.md](./PAYMENTS.md) | Payment stubs (MoMo out of scope) |
+| [PAYMENT_PROVIDER_DECISION.md](./PAYMENT_PROVIDER_DECISION.md) | Provider decision record |
 
-| Runtime                        | Responsibility                                |
-| ------------------------------ | --------------------------------------------- |
-| Supabase Postgres + RLS        | Catalogue, inventory, orders, delivery config |
-| Supabase Auth                  | Customer/admin identity (later)               |
-| Supabase Storage               | Product image originals/derivatives (later)   |
-| Edge Functions                 | Webhooks, privileged jobs (later)             |
-| Next.js server (frontend repo) | SSR, some BFF Route Handlers when simplest    |
+## Security & release
 
-## Local setup
+| Doc | Contents |
+| --- | -------- |
+| [SECURITY.md](./SECURITY.md) | Backend security rules |
+| [RLS_INVENTORY.md](./RLS_INVENTORY.md) | RLS coverage map |
+| [PRIVACY_AND_RETENTION.md](./PRIVACY_AND_RETENTION.md) | PII posture |
+| [BACKUP_RESTORE.md](./BACKUP_RESTORE.md) | Staging restore drill |
+| [TESTING.md](./TESTING.md) | Contract/validation tests |
+| [RELEASE_CHECKLIST.md](./RELEASE_CHECKLIST.md) | Release gate |
+| [RWANDA_LAUNCH_CHECKLIST.md](./RWANDA_LAUNCH_CHECKLIST.md) | Business/legal launch notes |
+| [DECISIONS.md](./DECISIONS.md) | ADRs |
+| [CHANGELOG.md](./CHANGELOG.md) | Version history |
 
-Prerequisites: Node 22+, npm, and optionally the [Supabase CLI](https://supabase.com/docs/guides/cli).
-
-```bash
-cd backend
-cp .env.example .env
-npm install
-npm run test
-npm run typecheck
-```
-
-With Supabase CLI installed:
-
-```bash
-supabase start
-supabase db reset
-```
-
-Copy local API URL and keys into `frontend/.env.local` as documented in the frontend environment guide.
-
-## Scripts
-
-| Command                | Purpose                         |
-| ---------------------- | ------------------------------- |
-| `npm run test`         | Vitest (contracts + validation) |
-| `npm run typecheck`    | TypeScript                      |
-| `npm run lint`         | ESLint                          |
-| `npm run format:check` | Prettier                        |
-
-## Documentation index
-
-- [ARCHITECTURE.md](./ARCHITECTURE.md)
-- [DECISIONS.md](./DECISIONS.md)
-- [ENVIRONMENT.md](./ENVIRONMENT.md)
-- [DATA_MODEL.md](./DATA_MODEL.md)
-- [SECURITY.md](./SECURITY.md)
-- [TESTING.md](./TESTING.md)
-- [OPERATIONS.md](./OPERATIONS.md)
-- [API_CONTRACTS.md](./API_CONTRACTS.md)
-- [ORDER_AND_PAYMENT_LIFECYCLE.md](./ORDER_AND_PAYMENT_LIFECYCLE.md)
-- [CHANGELOG.md](./CHANGELOG.md)
-
-## Phase status
-
-Phase 00 establishes structure, contracts, initial migration (extensions only), docs and CI. Catalogue tables and seed data intentionally wait for later phases.
+Companion UI: `../../frontend/documentation/README.md`.

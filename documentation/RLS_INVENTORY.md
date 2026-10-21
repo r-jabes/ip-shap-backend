@@ -1,4 +1,4 @@
-# RLS inventory (Phase 08)
+# RLS inventory
 
 Verified against migrations under `supabase/migrations/`. Policies are the source of truth.
 

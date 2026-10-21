@@ -1,4 +1,4 @@
-# Backup & restore drill (P8)
+# Backup & restore drill
 
 Supabase owns automated backups / PITR on paid plans. This doc is the operator drill — execute **once on staging** before production sign-off, then keep the evidence row.
 
@@ -54,4 +54,4 @@ Verify catalogue seed product + RLS denials still hold.
 
 Do not run destructive restore drills against the live production project. Production restore is incident-only, with client Owner approval and a written rollback plan.
 
-See also: `OPERATIONS.md` (Backups), frontend `P8_HARDENING.md`.
+See also: `OPERATIONS.md` (Backups), frontend `HARDENING.md`.

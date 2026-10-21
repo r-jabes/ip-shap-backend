@@ -1,4 +1,4 @@
-# Payment provider decision (Rwanda) — Phase 07
+# Payment provider decision (Rwanda)
 
 **Status as of 2026-10-19:** **No live provider selected.** Credentials are unavailable. Production must keep `ONLINE_PAYMENT_ENABLED=false` until Rosine confirms a merchant account and this note is updated with dated official sources.
 

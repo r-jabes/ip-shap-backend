@@ -3,110 +3,76 @@
 ## Migrations
 
 ```bash
-npm run db:reset           # local (supabase db reset)
-npm run db:push            # linked remote (careful)
-supabase migration new <name>
+npm run db:reset           # local Docker only
+npm run db:push            # linked remote staging/prod (careful)
+npx supabase migration new <name>
 ```
 
-Never edit applied migrations in place on shared environments; add a new migration.
+Never edit applied migrations on shared environments; add a new migration instead.
 
-## P5 orders (frontend service role)
+## Orders (created from the frontend)
 
-Orders are created from the Next.js server with the service role: insert `orders` + `order_items` + history, then `reserve_order_stock`. Public never lists orders; lookup uses `reference` + `lookup_token` (rate limited, constant-time token compare).
+Orders are inserted by the Next.js server with the service role: `orders` + `order_items` + history, then `reserve_order_stock`. Public clients never list orders. Lookup uses `reference` + `lookup_token` (rate limited, constant-time compare).
 
-Configure on the frontend host: `ORDER_NOTIFY_EMAILS`, `EMAIL_FROM`, `RESEND_API_KEY`.
+Configure on the **frontend** host: `ORDER_NOTIFY_EMAILS`, `EMAIL_FROM`, `RESEND_API_KEY`.
 
-## P4 stock engine
+## Stock
 
-After `20261021190000_p4_stock_engine.sql`:
-
-- `orders.stock_committed` — set when place-order decrements on-hand inventory (not confirm/payment)
-- `reserve_order_stock(order_id)` / `restore_order_stock(order_id)` — row-locked, idempotent (service role)
+- `orders.stock_committed` — set when place-order decrements on-hand inventory (not on confirm/payment)
+- `reserve_order_stock(order_id)` / `restore_order_stock(order_id)` — row-locked, idempotent
 - `adjust_inventory_level(...)` — optimistic expected-qty guard for admin adjusts
 
 Unknown availability is never decremented as counted stock. Cancel restores quantities reserved at place.
 
-## P3 media storage
+## Media storage
 
-After `20261021180000_p3_catalogue_media.sql`:
-
-- Bucket `product-originals` — private sources (not publicly readable)
+- Bucket `product-originals` — private sources
 - Bucket `product-catalogue` — public JPEG derivatives
 - RPC `apply_bulk_catalogue_import(jsonb)` — transactional CSV apply (service role only)
 
-Admin uploads go through the frontend service role: magic-byte check → private original → sharp re-encode → public derivative + `product_images` row.
+Admin uploads (frontend): magic-byte check → private original → sharp re-encode → public derivative + `product_images` row.
 
-## P1 seed + RLS smoke
-
-After migrations on **staging** (not production until cutover):
+## Seed + RLS smoke (staging)
 
 ```bash
-npm run db:seed:p1         # minimal published product
-npm run db:rls-smoke       # asserts no anon order SELECT + P1 columns
+npm run db:seed:p1
+npm run db:rls-smoke
 ```
 
-Or paste `supabase/seed/p1_minimal_catalogue.sql` and `supabase/seed/rls_smoke_checks.sql` into the Supabase SQL editor.
+Or paste `supabase/seed/p1_minimal_catalogue.sql` and `supabase/seed/rls_smoke_checks.sql` in the SQL editor.
 
-Then from the frontend (with staging URL + anon or service key, `NEXT_PUBLIC_DEMO_MODE=false`):
+With frontend env pointed at staging and `NEXT_PUBLIC_DEMO_MODE=false`, the shop should show the seed product.
 
-```ts
-import { getCatalogueRepository } from "@/lib/catalogue";
-const products = await getCatalogueRepository().listProducts();
-// expect seed-house-red after seed
-```
+## Admin Auth
 
-## Backups
+**Preferred:** `npm run db:seed:admins` after setting `ADMIN_OWNER_*` in `backend/.env.local` (see `.env.example`).
 
-Use Supabase automated backups / point-in-time recovery appropriate to the paid plan. **P8:** execute and log a staging restore drill using [`BACKUP_RESTORE.md`](./BACKUP_RESTORE.md) before production sign-off.
+Creates/updates Auth users and upserts `admin_profiles` as `owner`. Sign in at `/admin/login`.
 
-## Incident / rollback
+Further invites: `/admin/team` in the frontend.
 
-1. Identify failing migration or function version
-2. Roll forward with a corrective migration when possible
-3. Coordinate frontend deploy compatibility via contract version notes
+**Roles:** `owner` (invite + prices) · `manager` (prices, no invite) · `staff` (no prices / invite / CSV).
 
-## Secrets rotation
-
-Rotate service role keys and webhook secrets via the Supabase dashboard / provider console; update hosting env vars; never commit values.
-
-## Admin Auth (P2)
-
-**Primary:** Supabase Auth email/password. Users must have an active `admin_profiles` row. Owners invite teammates from `/admin/team` (no public `/admin` registration).
-
-**First owners (staging) — preferred:**
-
-1. Put emails/passwords in `backend/.env.local` (see `.env.example` — never commit passwords):
-
-```env
-ADMIN_OWNER_1_EMAIL=…
-ADMIN_OWNER_1_PASSWORD=…
-ADMIN_OWNER_1_NAME=Rosine
-ADMIN_OWNER_2_EMAIL=…
-ADMIN_OWNER_2_PASSWORD=…
-ADMIN_OWNER_2_NAME=Patrick
-```
-
-2. After migrations (`npm run db:push`):
-
-```bash
-npm run db:seed:admins
-```
-
-Creates Auth users (or updates password if they already exist), upserts `admin_profiles` as `owner`, confirms email.
-
-3. Sign in at `/admin/login` with those emails/passwords.  
-4. Further invites: `/admin/team`.
-
-**Manual alternative:** Dashboard → Authentication → create users → SQL insert into `admin_profiles` (see older runbooks).
-
-**Break-glass (local / emergency):** frontend `ADMIN_BOOTSTRAP_TOKEN` on the login form. Prefer Auth for day-to-day.
-
-**Roles:** `owner` (invite + prices) · `manager` (prices, no invite) · `staff` (no prices, no invite, no CSV import).
+**Break-glass:** frontend `ADMIN_BOOTSTRAP_TOKEN` — emergency only.
 
 ## Bulk import CSV
 
-Template headers are defined in `contracts/bulk-import.ts` (`BULK_IMPORT_HEADERS`). Always dry-run validate; never silently skip invalid rows.
+Headers: `contracts/bulk-import.ts` (`BULK_IMPORT_HEADERS`). Always dry-run validate; never silently skip invalid rows.
+
+## Backups
+
+Use Supabase automated backups / PITR for the paid plan. Document a staging restore drill in [`BACKUP_RESTORE.md`](./BACKUP_RESTORE.md) before production sign-off.
+
+## Incident / rollback
+
+1. Identify failing migration or function version.
+2. Roll forward with a corrective migration when possible.
+3. Coordinate frontend deploy compatibility via contract notes.
+
+## Secrets rotation
+
+Rotate service role keys via the Supabase dashboard; update Vercel / `.env.local`; never commit values.
 
 ## Release
 
-Follow `RELEASE_CHECKLIST.md`. Confirm `RWANDA_LAUNCH_CHECKLIST.md` items with the business before marketing launch.
+Follow `RELEASE_CHECKLIST.md`. Confirm `RWANDA_LAUNCH_CHECKLIST.md` with the business before marketing launch.

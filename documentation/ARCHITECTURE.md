@@ -3,55 +3,56 @@
 ## Overview
 
 ```text
-frontend (Next.js)
+frontend (Next.js on Vercel)
     │  anon key + RLS
-    │  service role (server only, sparingly)
+    │  service role (server only)
     ▼
 Supabase
-    ├── Postgres (schema/migrations in this repo)
-    ├── Auth
-    ├── Storage
-    └── Edge Functions (this repo)
+    ├── Postgres (migrations in this repo)
+    ├── Auth (admin users + admin_profiles)
+    ├── Storage (product-originals / product-catalogue)
+    └── (optional) Edge Functions later
 
-contracts/ ── versioned Zod schemas mirrored by frontend domain types
+contracts/ ── versioned Zod schemas mirrored by the frontend
 ```
 
 ## Repository layout
 
 ```text
 backend/
-├── contracts/                 # Zod schemas + contract version
-├── src/validation/            # Env and shared validation helpers
+├── contracts/              # Zod schemas + contract version
+├── src/validation/         # Env helpers
+├── scripts/                # Ops scripts (e.g. seed-admins)
 ├── supabase/
 │   ├── config.toml
 │   ├── migrations/
-│   └── functions/             # Edge Functions (later)
+│   └── seed/
 ├── documentation/
-└── .github/workflows/ci.yml
+└── package.json
 ```
 
-## Responsibility split with frontend
+## Responsibility split
 
-| Concern                                    | Owner                                         |
-| ------------------------------------------ | --------------------------------------------- |
-| UI / UX / SEO                              | frontend                                      |
-| Schema, RLS, storage policies              | backend                                       |
-| Order creation integrity, payment webhooks | backend (+ frontend BFF only when documented) |
-| Demo fixtures                              | frontend (gated); never auto-seed production  |
-| RLS inventory / privacy retention notes    | backend documentation                         |
+| Concern | Owner |
+| ------- | ----- |
+| UI / SEO / checkout UX | frontend |
+| Schema, RLS, storage policies, stock RPCs | backend |
+| Staff email send | frontend (Resend) using order data |
+| Demo fixtures | frontend only; never auto-seed production DB |
+| Backups / restore drill | Supabase plan + `BACKUP_RESTORE.md` |
 
-Phase 08 hardening docs: `RLS_INVENTORY.md`, `PRIVACY_AND_RETENTION.md`, `RELEASE_CHECKLIST.md`, `RWANDA_LAUNCH_CHECKLIST.md`.
+## Catalogue & media
 
-## Product imagery (Phase 02)
+- Published products drive the storefront.
+- Originals stay in private `product-originals`; public JPEGs in `product-catalogue`.
+- Admin uploads: validate → private original → sharp re-encode → public derivative (frontend service role).
 
-- Private originals vs public derivatives (see `DATA_MODEL.md` / `SECURITY.md`)
-- Upload boundary validation in `contracts/product-image-upload.ts` (no live endpoint yet)
-- Catalogue image metadata includes roles and `processing_status`; unreviewed assets must not auto-publish
+## Orders & stock
+
+- Orders are created by the Next.js server with the service role.
+- Counted stock is reserved when the order is **placed** (not on confirm/payment).
+- Cancel restores reserved quantities. See `ORDER_AND_PAYMENT_LIFECYCLE.md`.
 
 ## Money
 
 All monetary columns and contract fields use integer RWF. No floating-point money.
-
-## Scaling posture
-
-Schema and indexes will be designed for 300+ products from the catalogue phase onward. Phase 00 only enables required extensions.

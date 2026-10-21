@@ -16,7 +16,7 @@ npm run lint
 npm run typecheck
 ```
 
-## Phase 08 coverage additions
+## Contract and money coverage
 
 - `multiplyRwfAmount` overflow + random integer invariants
 - Sandbox webhook forged signature rejection (existing)
