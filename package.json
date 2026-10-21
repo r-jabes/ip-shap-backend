@@ -11,12 +11,14 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "audit:prod": "npm audit --omit=dev --audit-level=critical",
-    "db:reset": "supabase db reset",
-    "db:push": "supabase db push",
-    "db:seed:p1": "supabase db query --file supabase/seed/p1_minimal_catalogue.sql",
-    "db:rls-smoke": "supabase db query --file supabase/seed/rls_smoke_checks.sql"
+    "db:reset": "npx supabase db reset",
+    "db:push": "npx supabase db push",
+    "db:seed:p1": "npx supabase db query --linked --file supabase/seed/p1_minimal_catalogue.sql",
+    "db:seed:admins": "node --env-file=.env.local scripts/seed-admins.mjs",
+    "db:rls-smoke": "npx supabase db query --linked --file supabase/seed/rls_smoke_checks.sql"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.118.0",
     "zod": "^4.6.7"
   },
   "devDependencies": {

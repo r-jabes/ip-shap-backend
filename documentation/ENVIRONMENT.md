@@ -11,15 +11,18 @@ npm run db:push
 npm run db:seed:p1
 ```
 
-**You do not need a filled `.env.local` for that** if the project is linked.
+**Why `supabase login`?** The dashboard is a browser session. The CLI is a separate tool that must prove *you* may change that project (`link` / `db push`). One login per machine is normal — not a second “Supabase account”.
 
-Optional `.env.local` (handy as a notepad / scripts) — same three API values as the frontend:
+**You do not need a filled `.env.local` for migrations** if the project is linked.
+
+Optional `.env.local` (API keys + admin seed) — same three API values as the frontend:
 
 | Variable | Purpose | Where in dashboard |
 | -------- | ------- | ------------------ |
 | `SUPABASE_URL` | HTTPS **API** URL (`https://xxxx.supabase.co`) | Settings → API → Project URL |
 | `SUPABASE_ANON_KEY` | Anon / publishable key (RLS) | Settings → API → `anon` `public` |
 | `SUPABASE_SERVICE_ROLE_KEY` | Service role (bypasses RLS) — never expose to browser | Settings → API → `service_role` |
+| `ADMIN_OWNER_N_EMAIL` / `_PASSWORD` / `_NAME` | Staging owners for `npm run db:seed:admins` | You choose (passwords never in Git) |
 
 ## `SUPABASE_URL` vs `SUPABASE_DB_URL`
 

@@ -67,8 +67,7 @@ create policy product_catalogue_admin_write on storage.objects
     and public.admin_has_role(array['owner', 'manager', 'staff']::public.admin_role[])
   );
 
-comment on table storage.buckets is
-  'product-originals = private sources; product-catalogue = public derivatives only.';
+-- (No COMMENT on storage.buckets — hosted Supabase roles are not table owner.)
 
 -- Transactional bulk catalogue apply (service role / trusted server only).
 create or replace function public.apply_bulk_catalogue_import(payload jsonb)

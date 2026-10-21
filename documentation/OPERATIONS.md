@@ -73,22 +73,33 @@ Rotate service role keys and webhook secrets via the Supabase dashboard / provid
 
 **Primary:** Supabase Auth email/password. Users must have an active `admin_profiles` row. Owners invite teammates from `/admin/team` (no public `/admin` registration).
 
-**First owners (staging):**
+**First owners (staging) — preferred:**
 
-1. Create Auth users in Supabase (Dashboard → Authentication → invite/password).
-2. Insert profiles (service role / SQL editor):
+1. Put emails/passwords in `backend/.env.local` (see `.env.example` — never commit passwords):
 
-```sql
-insert into public.admin_profiles (user_id, role, display_name, is_active)
-values
-  ('<wife-auth-uuid>', 'owner', 'Owner A', true),
-  ('<husband-auth-uuid>', 'owner', 'Owner B', true);
+```env
+ADMIN_OWNER_1_EMAIL=…
+ADMIN_OWNER_1_PASSWORD=…
+ADMIN_OWNER_1_NAME=Rosine
+ADMIN_OWNER_2_EMAIL=…
+ADMIN_OWNER_2_PASSWORD=…
+ADMIN_OWNER_2_NAME=Patrick
 ```
 
-3. Sign in at `/admin/login` with email + password.
-4. Further staff/manager/owner invites go through `/admin/team`.
+2. After migrations (`npm run db:push`):
 
-**Break-glass (local / emergency):** `ADMIN_BOOTSTRAP_TOKEN` (+ optional `ADMIN_BOOTSTRAP_EMAIL`) on the login form’s break-glass mode. Prefer Auth for day-to-day; document rotation of the bootstrap token.
+```bash
+npm run db:seed:admins
+```
+
+Creates Auth users (or updates password if they already exist), upserts `admin_profiles` as `owner`, confirms email.
+
+3. Sign in at `/admin/login` with those emails/passwords.  
+4. Further invites: `/admin/team`.
+
+**Manual alternative:** Dashboard → Authentication → create users → SQL insert into `admin_profiles` (see older runbooks).
+
+**Break-glass (local / emergency):** frontend `ADMIN_BOOTSTRAP_TOKEN` on the login form. Prefer Auth for day-to-day.
 
 **Roles:** `owner` (invite + prices) · `manager` (prices, no invite) · `staff` (no prices, no invite, no CSV import).
 
