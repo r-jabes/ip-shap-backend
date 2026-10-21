@@ -1,23 +1,52 @@
 # Backend environment variables
 
-Names and purposes only — never commit secrets.
+Names only — never commit secrets. The **hosted storefront** uses the frontend env vars (`frontend/documentation/ENVIRONMENT.md`). This file is for the `backend/` folder (CLI migrate/seed, local validation).
 
-## Environments
+## What you need for staging migrations
 
-Use **separate** Supabase projects for staging and production. Migration CI and local `SUPABASE_DB_URL` should target staging by default.
+After `npx supabase login` + `npx supabase link --project-ref <staging-ref>`, the CLI remembers the project. For day-to-day:
 
-| Variable | Required | Purpose |
-| -------- | -------- | ------- |
-| `SUPABASE_URL` | from P1 | Supabase API URL |
-| `SUPABASE_ANON_KEY` | from P1 | Anon/publishable key (RLS) |
-| `SUPABASE_SERVICE_ROLE_KEY` | from P1 | Service role — server/Edge only |
-| `SUPABASE_DB_URL` | migrations | Direct DB URL for migrations/admin |
-| `SUPABASE_JWT_SECRET` | advanced/local | JWT secret for local/advanced auth |
-| `PAYMENT_PROVIDER` | default `unselected` | Stay unselected for handover (no MoMo) |
-| `PAYMENT_WEBHOOK_SECRET` | if sandbox | HMAC for sandbox webhooks only |
+```bash
+npm run db:push
+npm run db:seed:p1
+```
 
-Admin Auth users are created in the Supabase dashboard; privilege via `admin_profiles` (see `SECURITY.md`). No public admin registration env flags.
+**You do not need a filled `.env.local` for that** if the project is linked.
 
-Validation helper: `src/validation/env.ts`.
+Optional `.env.local` (handy as a notepad / scripts) — same three API values as the frontend:
 
-Frontend app secrets and public contact vars live in `frontend/documentation/ENVIRONMENT.md`.
+| Variable | Purpose | Where in dashboard |
+| -------- | ------- | ------------------ |
+| `SUPABASE_URL` | HTTPS **API** URL (`https://xxxx.supabase.co`) | Settings → API → Project URL |
+| `SUPABASE_ANON_KEY` | Anon / publishable key (RLS) | Settings → API → `anon` `public` |
+| `SUPABASE_SERVICE_ROLE_KEY` | Service role (bypasses RLS) — never expose to browser | Settings → API → `service_role` |
+
+## `SUPABASE_URL` vs `SUPABASE_DB_URL`
+
+| | `SUPABASE_URL` | `SUPABASE_DB_URL` |
+| - | -------------- | ----------------- |
+| Protocol | `https://…supabase.co` | `postgresql://…` (or `postgres://…`) |
+| Talks to | PostgREST / Auth / Storage API | Postgres directly |
+| Used for | App clients, some scripts | `psql`, dumps, tools that need raw SQL over the wire |
+| Needed now? | Same as frontend (optional in backend `.env`) | **Optional** — not required for `supabase link` + `db:push` |
+
+Get `SUPABASE_DB_URL` only if you need it: Settings → Database → **Connection string** (URI). Prefer the **Session pooler** or direct connection as Supabase documents for your plan. Often includes the DB password you set at project creation.
+
+## JWT secret
+
+| | |
+| - | - |
+| What | Signing secret for Supabase Auth JWTs (`Settings → API → JWT Secret`) |
+| Needed for this repo? | **No** — not read by backend validation or the Next.js app (Auth verifies via Supabase) |
+| When you’d use it | Rare: custom JWT verify outside Supabase, or local deep debugging |
+
+Omit it from `.env` unless you have a specific reason.
+
+## Not needed for staging
+
+- `PAYMENT_*` — keep payments disabled on the frontend (`ONLINE_PAYMENT_ENABLED=false`)
+- Separate production Supabase keys — use a **different** project later; don’t put prod in this file
+
+## Validation
+
+Optional helper: `src/validation/env.ts` (does not include JWT).

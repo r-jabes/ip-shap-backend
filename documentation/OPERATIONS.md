@@ -57,7 +57,7 @@ const products = await getCatalogueRepository().listProducts();
 
 ## Backups
 
-Use Supabase automated backups / point-in-time recovery appropriate to the paid plan. Document restore drills before production launch.
+Use Supabase automated backups / point-in-time recovery appropriate to the paid plan. **P8:** execute and log a staging restore drill using [`BACKUP_RESTORE.md`](./BACKUP_RESTORE.md) before production sign-off.
 
 ## Incident / rollback
 
