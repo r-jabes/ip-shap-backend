@@ -3,12 +3,31 @@
 ## Migrations
 
 ```bash
-supabase db reset          # local
-supabase db push           # linked remote (careful)
+npm run db:reset           # local (supabase db reset)
+npm run db:push            # linked remote (careful)
 supabase migration new <name>
 ```
 
 Never edit applied migrations in place on shared environments; add a new migration.
+
+## P1 seed + RLS smoke
+
+After migrations on **staging** (not production until cutover):
+
+```bash
+npm run db:seed:p1         # minimal published product
+npm run db:rls-smoke       # asserts no anon order SELECT + P1 columns
+```
+
+Or paste `supabase/seed/p1_minimal_catalogue.sql` and `supabase/seed/rls_smoke_checks.sql` into the Supabase SQL editor.
+
+Then from the frontend (with staging URL + anon or service key, `NEXT_PUBLIC_DEMO_MODE=false`):
+
+```ts
+import { getCatalogueRepository } from "@/lib/catalogue";
+const products = await getCatalogueRepository().listProducts();
+// expect seed-house-red after seed
+```
 
 ## Backups
 
