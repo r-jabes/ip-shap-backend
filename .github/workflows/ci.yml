@@ -19,3 +19,7 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run test
+      - name: Audit production dependencies (critical)
+        run: npm run audit:prod
+      - name: Audit production dependencies (report)
+        run: npm audit --omit=dev --audit-level=high || true

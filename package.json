@@ -9,7 +9,8 @@
     "test:watch": "vitest",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "audit:prod": "npm audit --omit=dev --audit-level=critical"
   },
   "dependencies": {
     "zod": "^4.6.7"
