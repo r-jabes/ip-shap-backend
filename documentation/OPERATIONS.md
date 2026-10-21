@@ -10,6 +10,12 @@ supabase migration new <name>
 
 Never edit applied migrations in place on shared environments; add a new migration.
 
+## P5 orders (frontend service role)
+
+Orders are created from the Next.js server with the service role: insert `orders` + `order_items` + history, then `reserve_order_stock`. Public never lists orders; lookup uses `reference` + `lookup_token` (rate limited, constant-time token compare).
+
+Configure on the frontend host: `ORDER_NOTIFY_EMAILS`, `EMAIL_FROM`, `RESEND_API_KEY`.
+
 ## P4 stock engine
 
 After `20261021190000_p4_stock_engine.sql`:
