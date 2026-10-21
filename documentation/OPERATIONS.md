@@ -14,11 +14,11 @@ Never edit applied migrations in place on shared environments; add a new migrati
 
 After `20261021190000_p4_stock_engine.sql`:
 
-- `orders.stock_committed` — set when confirm decrements on-hand inventory
-- `confirm_order_stock(order_id)` / `restore_order_stock(order_id)` — row-locked, idempotent (service role)
+- `orders.stock_committed` — set when place-order decrements on-hand inventory (not confirm/payment)
+- `reserve_order_stock(order_id)` / `restore_order_stock(order_id)` — row-locked, idempotent (service role)
 - `adjust_inventory_level(...)` — optimistic expected-qty guard for admin adjusts
 
-Unknown availability is never decremented as counted stock. Cancel after confirm restores quantities.
+Unknown availability is never decremented as counted stock. Cancel restores quantities reserved at place.
 
 ## P3 media storage
 

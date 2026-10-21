@@ -31,10 +31,10 @@ Browser redirects alone never set `paid`. Manual staff marks require reference +
 
 ## Stock reservation policy
 
-- **When:** at order creation (atomic with order + items).
-- **What:** for products with a known non-null on-hand quantity, reserve units (`available = on_hand - open_reservations`). Fail if `available < ordered`. SQL uses conditional updates / row locks; the demo store uses an in-memory reservation map.
+- **When:** at order creation / place (atomic with order + items). **Not** on staff confirm or payment.
+- **What:** for products with a known non-null on-hand quantity, decrement on-hand immediately (`reserve_order_stock`). Fail if `on_hand < ordered`. SQL uses row locks; the demo store mutates in-memory catalogue qty.
 - **Unknown stock:** do not invent availability; lines may be accepted without a hard reservation when quantity is unknown.
-- **Release:** on `cancelled`, release reservations; reservation expiry (`reservation_expires_at`, default 48h) applies while awaiting confirmation.
+- **Release:** on `cancelled`, restore decremented qty (`restore_order_stock`). Confirm/payment leave inventory unchanged.
 - **Oversell prevention:** never rely on UI-only checks.
 
 ## Idempotency

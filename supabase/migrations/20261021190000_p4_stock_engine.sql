@@ -1,16 +1,17 @@
--- P4: atomic stock confirm/restore and inventory adjust with row locks.
+-- P4: atomic stock reserve-at-place / restore-on-cancel and inventory adjust with row locks.
+-- Policy: decrement known on-hand qty when the order is placed — not on confirm/payment.
 
 alter table public.orders
   add column if not exists stock_committed boolean not null default false;
 
 comment on column public.orders.stock_committed is
-  'True after fulfilment confirm decremented on-hand inventory. Cancel restores when true.';
+  'True after place-order decremented on-hand inventory. Cancel restores when true. Confirm/payment do not change stock.';
 
 create index if not exists inventory_levels_availability_idx
   on public.inventory_levels (availability);
 
--- Decrement on-hand stock for a confirmed order (idempotent).
-create or replace function public.confirm_order_stock(p_order_id uuid)
+-- Decrement on-hand stock when an order is placed (idempotent).
+create or replace function public.reserve_order_stock(p_order_id uuid)
 returns jsonb
 language plpgsql
 security definer
@@ -32,7 +33,7 @@ begin
   end if;
 
   if ord.stock_committed then
-    return jsonb_build_object('ok', true, 'already_committed', true, 'decremented', 0);
+    return jsonb_build_object('ok', true, 'already_reserved', true, 'decremented', 0);
   end if;
 
   for item in
@@ -92,7 +93,7 @@ begin
         when inv.quantity - item.quantity <= 5 then 'low_stock'::public.product_availability
         else inv.availability
       end,
-      'order confirm ' || ord.reference
+      'order place reserve ' || ord.reference
     );
 
     decremented := decremented + item.quantity;
@@ -101,20 +102,19 @@ begin
   update public.orders
   set
     stock_committed = true,
-    stock_reserved = false,
-    reservation_expires_at = null,
+    stock_reserved = true,
     updated_at = now()
   where id = p_order_id;
 
   return jsonb_build_object(
     'ok', true,
-    'already_committed', false,
+    'already_reserved', false,
     'decremented', decremented
   );
 end;
 $$;
 
--- Restore on-hand stock when cancelling a committed order (idempotent).
+-- Restore on-hand stock when cancelling a reserved order (idempotent).
 create or replace function public.restore_order_stock(p_order_id uuid)
 returns jsonb
 language plpgsql
@@ -204,6 +204,8 @@ begin
   update public.orders
   set
     stock_committed = false,
+    stock_reserved = false,
+    reservation_expires_at = null,
     updated_at = now()
   where id = p_order_id;
 
@@ -295,14 +297,17 @@ begin
 end;
 $$;
 
-revoke all on function public.confirm_order_stock(uuid) from public;
+revoke all on function public.reserve_order_stock(uuid) from public;
 revoke all on function public.restore_order_stock(uuid) from public;
 revoke all on function public.adjust_inventory_level(uuid, integer, public.product_availability, text, integer, uuid) from public;
 
-grant execute on function public.confirm_order_stock(uuid) to service_role;
+grant execute on function public.reserve_order_stock(uuid) to service_role;
 grant execute on function public.restore_order_stock(uuid) to service_role;
 grant execute on function public.adjust_inventory_level(uuid, integer, public.product_availability, text, integer, uuid) to service_role;
 
--- Allow null actor for service-role / system stock events (confirm/restore).
+-- Allow null actor for service-role / system stock events (reserve/restore).
 alter table public.stock_adjustments
   alter column actor_user_id drop not null;
+
+-- Drop legacy confirm-time RPC if a prior draft migration created it.
+drop function if exists public.confirm_order_stock(uuid);
