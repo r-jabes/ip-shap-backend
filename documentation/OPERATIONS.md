@@ -10,6 +10,16 @@ supabase migration new <name>
 
 Never edit applied migrations in place on shared environments; add a new migration.
 
+## P4 stock engine
+
+After `20261021190000_p4_stock_engine.sql`:
+
+- `orders.stock_committed` — set when confirm decrements on-hand inventory
+- `confirm_order_stock(order_id)` / `restore_order_stock(order_id)` — row-locked, idempotent (service role)
+- `adjust_inventory_level(...)` — optimistic expected-qty guard for admin adjusts
+
+Unknown availability is never decremented as counted stock. Cancel after confirm restores quantities.
+
 ## P3 media storage
 
 After `20261021180000_p3_catalogue_media.sql`:
