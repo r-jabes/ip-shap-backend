@@ -43,18 +43,28 @@ Use Supabase automated backups / point-in-time recovery appropriate to the paid 
 
 Rotate service role keys and webhook secrets via the Supabase dashboard / provider console; update hosting env vars; never commit values.
 
-## Admin owner bootstrap
+## Admin Auth (P2)
 
-1. Create Auth user in Supabase (invite/password reset) — no public admin registration UI.
-2. Insert owner profile (service role / SQL editor):
+**Primary:** Supabase Auth email/password. Users must have an active `admin_profiles` row. Owners invite teammates from `/admin/team` (no public `/admin` registration).
+
+**First owners (staging):**
+
+1. Create Auth users in Supabase (Dashboard → Authentication → invite/password).
+2. Insert profiles (service role / SQL editor):
 
 ```sql
 insert into public.admin_profiles (user_id, role, display_name, is_active)
-values ('<auth-user-uuid>', 'owner', 'Primary owner', true);
+values
+  ('<wife-auth-uuid>', 'owner', 'Owner A', true),
+  ('<husband-auth-uuid>', 'owner', 'Owner B', true);
 ```
 
-3. Confirm the user can read `admin_profiles` for themselves and mutate products under RLS.
-4. Add `staff` rows only from an owner-controlled process.
+3. Sign in at `/admin/login` with email + password.
+4. Further staff/manager/owner invites go through `/admin/team`.
+
+**Break-glass (local / emergency):** `ADMIN_BOOTSTRAP_TOKEN` (+ optional `ADMIN_BOOTSTRAP_EMAIL`) on the login form’s break-glass mode. Prefer Auth for day-to-day; document rotation of the bootstrap token.
+
+**Roles:** `owner` (invite + prices) · `manager` (prices, no invite) · `staff` (no prices, no invite, no CSV import).
 
 ## Bulk import CSV
 
