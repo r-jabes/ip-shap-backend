@@ -65,7 +65,7 @@ Public cannot list orders. Lookup is reference + token (app layer). Admins read 
 
 ## Schema status
 
-Extensions + catalogue + admin/inventory + orders + P1 durable-layer migrations are in `supabase/migrations/`. Optional staging seed: `supabase/seed/p1_minimal_catalogue.sql` (not for production).
+Extensions + catalogue + admin/inventory + orders + P1 durable-layer + P3 media/storage migrations are in `supabase/migrations/`. Optional staging seed: `supabase/seed/p1_minimal_catalogue.sql` (not for production).
 
 ## Demo vs production
 

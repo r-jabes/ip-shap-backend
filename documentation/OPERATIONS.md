@@ -10,6 +10,16 @@ supabase migration new <name>
 
 Never edit applied migrations in place on shared environments; add a new migration.
 
+## P3 media storage
+
+After `20261021180000_p3_catalogue_media.sql`:
+
+- Bucket `product-originals` — private sources (not publicly readable)
+- Bucket `product-catalogue` — public JPEG derivatives
+- RPC `apply_bulk_catalogue_import(jsonb)` — transactional CSV apply (service role only)
+
+Admin uploads go through the frontend service role: magic-byte check → private original → sharp re-encode → public derivative + `product_images` row.
+
 ## P1 seed + RLS smoke
 
 After migrations on **staging** (not production until cutover):

@@ -17,6 +17,8 @@ Verified against migrations under `supabase/migrations/`. Policies are the sourc
 
 P1 adds `products.is_featured`, `orders.lookup_token_hash`, and `admin_role.manager`. Smoke SQL: `supabase/seed/rls_smoke_checks.sql`.
 
+P3 storage: `product-originals` (private; admin read/write) · `product-catalogue` (public read; admin write). Bulk apply RPC is `service_role` only.
+
 Order creation and webhook application use the **service role** / trusted server — never grant anon INSERT on orders.
 
 ## Residual risk
