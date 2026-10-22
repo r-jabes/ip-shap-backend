@@ -36,6 +36,7 @@ Admin uploads (frontend): magic-byte check → private original → sharp re-enc
 
 ```bash
 npm run db:seed:p1
+npm run db:seed:categories   # common drinks categories (safe to re-run)
 npm run db:rls-smoke
 ```
 

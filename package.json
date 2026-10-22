@@ -14,6 +14,7 @@
     "db:reset": "npx supabase db reset",
     "db:push": "npx supabase db push",
     "db:seed:p1": "npx supabase db query --linked --file supabase/seed/p1_minimal_catalogue.sql",
+    "db:seed:categories": "npx supabase db query --linked --file supabase/seed/p5_common_categories.sql",
     "db:seed:admins": "node --env-file=.env.local scripts/seed-admins.mjs",
     "db:rls-smoke": "npx supabase db query --linked --file supabase/seed/rls_smoke_checks.sql"
   },
